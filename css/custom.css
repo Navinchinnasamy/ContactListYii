@@ -1,0 +1,57 @@
+/* >>> Change the page content width to 80 % */
+.container {
+    width: 80% !important;
+}
+
+/* >>> For Required star and error message */
+span.required, .errorMessage {
+    color: red;
+}
+
+.row {
+    padding: 5px;
+}
+
+.note {
+    font-size: 8pt;
+}
+
+/* >>> Input and Selects customizing */
+input[type='text'], input[type='date'], select {
+    padding: 5px !important;
+    border-radius: 5px !important;
+}
+
+input[type='text'], input[type='date']{
+    width: 20%;
+}
+
+select{
+    width: 21%;
+}
+
+.export_contacts > img{
+    width: 32px;
+}
+
+.export_contacts {
+    float: right;
+    padding: 5px;
+}
+
+/* >>> Customize the Update button */
+#update-contact-submit {
+    background-color: #7db8e0;
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px;
+    font-weight: bold;
+    color: white;
+}
+    
+/* >>> Align all the lebels equally in add page */
+.input_label {
+    font-weight: bold !important;
+    display: inline-block;
+    width: 12%;
+}​
