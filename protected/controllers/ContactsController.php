@@ -5,10 +5,32 @@ class ContactsController extends Controller {
             'genders' => array('m' => 'Male', 'f' => 'Female', 'o' => 'Other'),
             'hobbies' => array('tv' => 'Watching TV', 'games' => 'Playing Games', 'sleep' => 'Sleeping'));
     
+//    public function accessRules() {
+//        return array(
+//            array(
+//                'deny',
+//                'users'=>array('*')
+//            )
+//        );
+//    }
+//    
+//    public function filters(){
+//        return array(
+//            'accessControl',
+//        );
+//    }
+    
+    public function filters()
+    {
+        return array(
+            'accessControl', // perform access control for CRUD operations
+        );
+    }
+    
     public function actionIndex() {
         $model=new Contacts;
         $rawData=$model->findAll(array('condition' => "status = 'active'"));
-        
+                
         foreach ($rawData as $key => $row){
             $rawData[$key]->gender = $this->multichoice['genders'][$row->gender];
             $rawData[$key]->state = $this->multichoice['stateslist'][$row->state];
@@ -22,22 +44,22 @@ class ContactsController extends Controller {
             $rawData[$key]->hobbies = trim($hobbies_text);
         }
         
-	$arrayDataProvider=new CArrayDataProvider($rawData, array(
-            'id'=>'id',
-            'sort'=>array(
-                'attributes'=>array(
-                    'first_name', 'last_name',
+        $arrayDataProvider=new CArrayDataProvider($rawData, array(
+                'id'=>'id',
+                'sort'=>array(
+                    'attributes'=>array(
+                        'first_name', 'last_name',
+                    ),
                 ),
-            ),
-            'pagination'=>array(
-                'pageSize'=>10,
-            ),
-	));
+                'pagination'=>array(
+                    'pageSize'=>10,
+                ),
+        ));
 
-	$params =array(
-            'dataProvider'=>$arrayDataProvider,
-            'model'=>$model, 
-	);
+        $params =array(
+                'dataProvider'=>$arrayDataProvider,
+                'model'=>$model, 
+        );
         
         $this->render('index', $params);
     }
@@ -51,6 +73,13 @@ class ContactsController extends Controller {
             if($model->validate())
             {
                 $model->save();
+               /*  $params = "";
+                foreach($model as $k => $p){
+                    if($k != 'status' && !empty($p))
+                        $params .= empty($params) ? "'{$p}'" : ", '{$p}'";
+                }
+                                
+                $ins = Yii::app()->db->createCommand("CALL `handle_contact`('insert', {$params}, '')")->execute(); */
                 Yii::app()->user->setFlash('contact','Contact has been added successfully.');
                 //$this->refresh();
                 $this->redirect(array('contacts/index'));
@@ -67,6 +96,18 @@ class ContactsController extends Controller {
     
     public function actionUpdate(){
         if(isset($_POST['Contacts'])){
+            $params = ""; $keys = "";
+            foreach($_POST['Contacts'] as $k => $p){
+                if($k != "status" && $k != "id"){
+                    if($k == "gender")
+                        $params .= ", '', '', ''";
+                        
+                    $params .= empty($params) ? "'{$p}'" : ", '{$p}'";
+                }
+            }
+            $params .= ", '', '{$_POST['Contacts']['id']}'";
+            $ins = Yii::app()->db->createCommand("CALL `handle_contact`('update', {$params})")->execute();
+            
             $ret = Contacts::model()->updateByPk($_POST['Contacts']['id'], $_POST['Contacts']);
             print_r(json_encode($ret)); exit;
         }
@@ -78,7 +119,11 @@ class ContactsController extends Controller {
     
     public function actionDelete(){
 //        Contacts::model()->findByPk($_POST['id'])->delete();
-        $ret = Contacts::model()->updateByPk($_POST['id'], array('status' => 'inactive'));
+//        $ret = Contacts::model()->updateByPk($_POST['id'], array('status' => 'inactive'));
+        $params = "";
+        $params .= str_repeat("'', ", 9);
+        $params .= " '{$_POST['id']}'";
+        $ret = Yii::app()->db->createCommand("CALL `handle_contact`('delete', {$params})")->execute();
         print_r(json_encode($ret)); exit;
     }
     
@@ -102,7 +147,7 @@ class ContactsController extends Controller {
         );
         
         $html = $this->renderPartial('pdf', $parameters, true);
-
+        
         $pdf = Yii::createComponent('application.extensions.tcpdf.tcpdf', 'L');
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor(Yii::app()->name);
@@ -145,9 +190,6 @@ class ContactsController extends Controller {
         Yii::app()->request->sendFile('ContactsList.xls', $this->renderPartial('excel', array(
                     'contacts' => $contacts
                         ), true)
-        );
-
-//        $html = $this->renderPartial('excel', $parameters);
-        
+        ); 
     }
 }

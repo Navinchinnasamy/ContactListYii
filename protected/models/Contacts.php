@@ -1,20 +1,4 @@
 <?php
-
-/**
- * This is the model class for table "contacts".
- *
- * The followings are the available columns in table 'contacts':
- * @property string $id
- * @property string $first_name
- * @property string $last_name
- * @property string $dob
- * @property string $email
- * @property string $gender
- * @property string $city
- * @property integer $state
- * @property string $zip
- * @property string $hobbies
- */
 class Contacts extends CActiveRecord
 {
 	/**
@@ -30,19 +14,19 @@ class Contacts extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('first_name, email, gender, state, zip', 'required'),
-			array('state', 'numerical', 'integerOnly'=>true),
-			array('first_name, last_name, city', 'length', 'max'=>100),
-			array('email', 'length', 'max'=>200),
-			array('gender, zip', 'length', 'max'=>10),
-			array('dob', 'safe'),
-			// The following rule is used by search().
-			// @todo Please remove those attributes that should not be searched.
-			array('id, first_name, last_name, dob, email, gender, city, state, zip, hobbies', 'safe', 'on'=>'search'),
-		);
+            // NOTE: you should only define rules for those attributes that
+            // will receive user inputs.
+            return array(
+                array('first_name, email, gender, state, zip', 'required'),
+                array('state', 'numerical', 'integerOnly'=>true),
+                array('first_name, last_name, city', 'length', 'max'=>100),
+                array('email', 'length', 'max'=>200),
+                array('gender, zip', 'length', 'max'=>10),
+                array('dob', 'safe'),
+                // The following rule is used by search().
+                // @todo Please remove those attributes that should not be searched.
+                array('id, first_name, last_name, dob, email, gender, city, state, zip, hobbies', 'safe', 'on'=>'search'),
+            );
 	}
 
 	/**
@@ -62,18 +46,18 @@ class Contacts extends CActiveRecord
 	 */
 	public function attributeLabels()
 	{
-		return array(
-			'id' => 'ID',
-			'first_name' => 'First Name',
-			'last_name' => 'Last Name',
-			'dob' => 'Date of Birth',
-			'email' => 'E-Mail',
-			'gender' => 'Gender',
-			'city' => 'City',
-			'state' => 'State',
-			'zip' => 'Zip',
-			'hobbies' => 'Hobbies',
-		);
+            return array(
+                    'id' => 'ID',
+                    'first_name' => 'First Name',
+                    'last_name' => 'Last Name',
+                    'dob' => 'Date of Birth',
+                    'email' => 'E-Mail',
+                    'gender' => 'Gender',
+                    'city' => 'City',
+                    'state' => 'State',
+                    'zip' => 'Zip',
+                    'hobbies' => 'Hobbies',
+            );
 	}
 
 	/**
@@ -125,5 +109,16 @@ class Contacts extends CActiveRecord
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
+	}
+	
+	/**
+	 * Behavior - Kind of event listener.
+	 */
+	public function behaviors(){
+		return array(
+			'myBehavior' => array(
+				'class' => 'application.components.behaviors.myBehavior',
+			)
+		);
 	}
 }
